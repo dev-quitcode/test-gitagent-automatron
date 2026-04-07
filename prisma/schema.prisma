@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPPLIER
+  ADMIN
+}
+
+enum SupplierStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OrderStatus {
+  DRAFT
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  PAID
+  REJECTED
+}
+
+enum DocumentType {
+  COMPLIANCE
+  CERTIFICATE
+  OTHER
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role
+  supplierId   String?
+  supplier     Supplier? @relation(fields: [supplierId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Supplier {
+  id           String         @id @default(cuid())
+  companyName  String
+  contactEmail String
+  contactPhone String
+  address      String
+  status       SupplierStatus
+  users        User[]
+  orders       Order[]
+  invoices     Invoice[]
+  documents    Document[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  supplierId  String
+  supplier    Supplier    @relation(fields: [supplierId], references: [id])
+  status      OrderStatus
+  totalAmount Decimal
+  currency    String      @default("USD")
+  items       OrderItem[]
+  invoices    Invoice[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id])
+  description String
+  quantity    Int
+  unitPrice   Decimal
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  orderId       String
+  order         Order         @relation(fields: [orderId], references: [id])
+  supplierId    String
+  supplier      Supplier      @relation(fields: [supplierId], references: [id])
+  status        InvoiceStatus
+  totalAmount   Decimal
+  currency      String        @default("USD")
+  dueDate       DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Document {
+  id           String       @id @default(cuid())
+  supplierId   String
+  supplier     Supplier     @relation(fields: [supplierId], references: [id])
+  fileName     String
+  fileUrl      String
+  documentType DocumentType
+  uploadedAt   DateTime     @default(now())
+}
