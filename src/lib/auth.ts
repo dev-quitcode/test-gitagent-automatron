@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
-        session.user.supplierId = token.supplierId as string | null | undefined;
+        session.user.supplierId = token.supplierId;
       }
       return session;
     },

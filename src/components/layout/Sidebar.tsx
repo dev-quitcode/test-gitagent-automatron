@@ -16,9 +16,10 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
 
   const visibleItems = navItems
     .filter(item => !role || item.roles.includes(role))
+    .filter(item => !item.href.includes('[myId]') || !!supplierId)
     .map(item => ({
       ...item,
-      href: item.href.replace('[myId]', supplierId ?? ''),
+      href: supplierId ? item.href.replace('[myId]', supplierId) : item.href,
     }))
 
   return (
