@@ -1,34 +1,48 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { SessionProvider } from 'next-auth/react'
 import './index.css'
 import App from './App.tsx'
 import AuthLayout from './app/(auth)/layout.tsx'
 import LoginPage from './app/(auth)/login/page.tsx'
 import RegisterPage from './app/(auth)/register/page.tsx'
+import PortalLayout from './app/(portal)/layout.tsx'
+import DashboardPage from './app/(portal)/dashboard/page.tsx'
+import OrdersPage from './app/(portal)/orders/page.tsx'
+import InvoicesPage from './app/(portal)/invoices/page.tsx'
+import SuppliersPage from './app/(portal)/suppliers/page.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route
-          path="/login"
-          element={
-            <AuthLayout>
-              <LoginPage />
-            </AuthLayout>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <AuthLayout>
-              <RegisterPage />
-            </AuthLayout>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <SessionProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route
+            path="/login"
+            element={
+              <AuthLayout>
+                <LoginPage />
+              </AuthLayout>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <AuthLayout>
+                <RegisterPage />
+              </AuthLayout>
+            }
+          />
+          <Route element={<PortalLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/suppliers" element={<SuppliersPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </SessionProvider>
   </StrictMode>,
 )
