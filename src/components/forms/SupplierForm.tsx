@@ -49,8 +49,15 @@ export function SupplierForm({ supplier }: SupplierFormProps) {
     if (!res.ok) {
       let errorMessage = 'Unable to update supplier. Please try again.'
       try {
-        const data = await res.json() as { error?: string }
-        if (data.error) errorMessage = data.error
+        const data: unknown = await res.json()
+        if (
+          data !== null &&
+          typeof data === 'object' &&
+          'error' in data &&
+          typeof (data as Record<string, unknown>).error === 'string'
+        ) {
+          errorMessage = (data as { error: string }).error
+        }
       } catch {
         // JSON parsing failed; keep the default error message
       }

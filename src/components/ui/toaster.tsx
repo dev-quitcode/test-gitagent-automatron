@@ -18,7 +18,7 @@ export function Toaster({ children }: { children: ReactNode }) {
     (id: string) => (open: boolean) => {
       if (!open) state.dismiss(id)
     },
-    [state],
+    [state.dismiss],
   )
 
   return (
