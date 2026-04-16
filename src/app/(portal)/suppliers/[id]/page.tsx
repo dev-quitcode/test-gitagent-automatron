@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { SupplierForm } from '@/components/forms/SupplierForm'
+import { DocumentManager } from '@/components/shared/DocumentManager'
 import { SupplierStatusActions } from '@/components/shared/SupplierStatusActions'
 import { SUPPLIER_STATUS_COLORS, SUPPLIER_STATUS_LABELS } from '@/lib/constants'
 import { formatDate } from '@/lib/formatters'
@@ -88,6 +89,16 @@ export default function SupplierDetailPage() {
         </CardHeader>
         <CardContent>
           <SupplierForm supplier={supplier} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Documents</CardTitle>
+          <CardDescription>Upload and manage compliance documents and certificates.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <DocumentManager supplierId={supplier.id} />
         </CardContent>
       </Card>
     </div>
