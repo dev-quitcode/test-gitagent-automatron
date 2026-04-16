@@ -123,7 +123,7 @@ export default function CreateOrderPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create order</CardTitle>
+        <CardTitle>Create Order</CardTitle>
         <CardDescription>Add order details and one or more line items.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -221,7 +221,7 @@ export default function CreateOrderPage() {
                       step="1"
                       min="1"
                       aria-invalid={!!errors.items?.[index]?.quantity}
-                      {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+                      {...register(`items.${index}.quantity`)}
                     />
                     {errors.items?.[index]?.quantity && (
                       <p role="alert" className="text-sm text-destructive">
@@ -238,7 +238,7 @@ export default function CreateOrderPage() {
                       step="0.01"
                       min="0.01"
                       aria-invalid={!!errors.items?.[index]?.unitPrice}
-                      {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
+                      {...register(`items.${index}.unitPrice`)}
                     />
                     {errors.items?.[index]?.unitPrice && (
                       <p role="alert" className="text-sm text-destructive">
