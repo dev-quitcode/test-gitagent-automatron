@@ -144,9 +144,9 @@ export async function PUT(
     const allowedTransitions = getUpdatableStatusesByCurrent(user.role)[existingOrder.status]
     if (!allowedTransitions.includes(status)) {
       return new Response(
-        JSON.stringify({ error: 'You do not have permission to perform this status transition.' }),
+        JSON.stringify({ error: 'Invalid status transition for current role.' }),
         {
-        status: 403,
+        status: 400,
         headers: { 'Content-Type': 'application/json' },
         },
       )

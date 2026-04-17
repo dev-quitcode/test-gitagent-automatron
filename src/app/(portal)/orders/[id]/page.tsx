@@ -112,7 +112,14 @@ export default function OrderDetailPage() {
             Total: {formatCurrency(Number(order.totalAmount), order.currency)}
           </p>
           <p className="text-sm text-muted-foreground">
-            Created {formatDate(new Date(order.createdAt))} - Updated {formatDate(new Date(order.updatedAt))}
+            Created{' '}
+            <time dateTime={new Date(order.createdAt).toISOString()}>
+              {formatDate(new Date(order.createdAt))}
+            </time>{' '}
+            - Updated{' '}
+            <time dateTime={new Date(order.updatedAt).toISOString()}>
+              {formatDate(new Date(order.updatedAt))}
+            </time>
           </p>
         </div>
 
