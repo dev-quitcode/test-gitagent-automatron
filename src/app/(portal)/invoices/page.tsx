@@ -32,16 +32,32 @@ export default function InvoicesPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/invoices')
+    const controller = new AbortController()
+    let isActive = true
+
+    fetch('/api/invoices', { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load invoices (${res.status})`)
         return res.json()
       })
-      .then((data: InvoiceListItem[]) => setInvoices(data))
-      .catch((err: unknown) =>
-        setError(err instanceof Error ? err.message : 'An unexpected error occurred.'),
-      )
-      .finally(() => setLoading(false))
+      .then((data: InvoiceListItem[]) => {
+        if (!isActive) return
+        setInvoices(data)
+      })
+      .catch((err: unknown) => {
+        if (!isActive) return
+        if (err instanceof DOMException && err.name === 'AbortError') return
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred.')
+      })
+      .finally(() => {
+        if (!isActive) return
+        setLoading(false)
+      })
+
+    return () => {
+      isActive = false
+      controller.abort()
+    }
   }, [])
 
   return (
