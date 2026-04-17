@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -25,9 +26,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const registered = (location.state as { registered?: boolean } | null)?.registered === true
+  const router = useRouter()
+  const [registered, setRegistered] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
   const {
@@ -37,6 +37,13 @@ export default function LoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   })
+
+  useEffect(() => {
+    if (window.sessionStorage.getItem('auth:registered') === 'true') {
+      setRegistered(true)
+      window.sessionStorage.removeItem('auth:registered')
+    }
+  }, [])
 
   async function onSubmit(values: LoginFormValues) {
     setServerError(null)
@@ -51,7 +58,7 @@ export default function LoginPage() {
       return
     }
 
-    navigate('/dashboard')
+    router.push('/dashboard')
   }
 
   return (
@@ -110,7 +117,7 @@ export default function LoginPage() {
           </Button>
           <p className="text-sm text-muted-foreground">
             Don&apos;t have an account?{' '}
-            <Link to="/register" className="underline underline-offset-4 hover:text-foreground">
+            <Link href="/register" className="underline underline-offset-4 hover:text-foreground">
               Register
             </Link>
           </p>
