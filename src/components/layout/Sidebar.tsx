@@ -32,8 +32,7 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
             variant="ghost"
             className={cn(
               'w-full justify-start gap-2',
-              (pathname === href || pathname.startsWith(`${href}/`)) &&
-                'bg-accent text-accent-foreground',
+              pathname === href && 'bg-accent text-accent-foreground',
             )}
           >
             <Icon className="size-4" />

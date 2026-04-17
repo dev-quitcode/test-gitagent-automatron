@@ -60,7 +60,7 @@ export function useSearchParams() {
   return useMemo(() => new URL(href).searchParams, [href])
 }
 
-export function useParams<T extends Record<string, string | undefined> = Record<string, string>>() {
+export function useParams<T extends Record<string, string> = Record<string, string>>() {
   const pathname = usePathname()
 
   for (const pattern of APP_ROUTE_PATTERNS) {
