@@ -14,7 +14,7 @@ const createInvoiceSchema = z.object({
 const MAX_INVOICE_NUMBER_RETRIES = 5
 
 function generateInvoiceNumber(): string {
-  return `INV-${randomUUID().replaceAll('-', '').toUpperCase()}`
+  return `INV-${randomUUID().replace(/-/g, '').toUpperCase()}`
 }
 
 function isInvoiceNumberConflict(error: unknown): boolean {
