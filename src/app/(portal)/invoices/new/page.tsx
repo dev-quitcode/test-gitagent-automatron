@@ -55,6 +55,7 @@ export default function CreateInvoicePage() {
   const { data: session } = useSession()
   const [searchParams] = useSearchParams()
   const [orders, setOrders] = useState<OrderOption[]>([])
+  const [loadingOrders, setLoadingOrders] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
 
@@ -70,7 +71,6 @@ export default function CreateInvoicePage() {
     resolver: zodResolver(createInvoiceSchema),
     defaultValues: {
       orderId: '',
-      totalAmount: 0,
       currency: 'USD',
       dueDate: '',
     },
@@ -103,13 +103,14 @@ export default function CreateInvoicePage() {
     )
       .then((responses) => {
         if (!isActive) return
-        const merged = Array.from(new Map(responses.flat().map((order) => [order.id, order])).values())
-        setOrders(merged)
+        setOrders(responses.flat())
+        setLoadingOrders(false)
       })
       .catch((error: unknown) => {
         if (!isActive) return
         if (error instanceof DOMException && error.name === 'AbortError') return
         setLoadError(error instanceof Error ? error.message : 'Failed to load orders.')
+        setLoadingOrders(false)
       })
 
     return () => {
@@ -197,11 +198,19 @@ export default function CreateInvoicePage() {
                 {errors.orderId.message}
               </p>
             )}
+            {loadingOrders && (
+              <p className="text-sm text-muted-foreground">Loading available orders…</p>
+            )}
+            {!loadingOrders && orders.length === 0 && !loadError && (
+              <p className="text-sm text-muted-foreground">
+                No confirmed or delivered orders are available to invoice.
+              </p>
+            )}
           </div>
 
           {selectedOrder && (
             <div className="rounded-md border p-4 space-y-3">
-              <h2 className="text-sm font-medium">Order details</h2>
+              <p className="text-sm font-medium">Order details</p>
               <p className="text-sm text-muted-foreground">
                 {selectedOrder.orderNumber} -{' '}
                 {formatCurrency(Number(selectedOrder.totalAmount), selectedOrder.currency)}
