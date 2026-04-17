@@ -143,10 +143,13 @@ export async function PUT(
   if (status && status !== existingOrder.status) {
     const allowedTransitions = getUpdatableStatusesByCurrent(user.role)[existingOrder.status]
     if (!allowedTransitions.includes(status)) {
-      return new Response(JSON.stringify({ error: 'Forbidden status transition.' }), {
+      return new Response(
+        JSON.stringify({ error: 'You do not have permission to perform this status transition.' }),
+        {
         status: 403,
         headers: { 'Content-Type': 'application/json' },
-      })
+        },
+      )
     }
   }
 

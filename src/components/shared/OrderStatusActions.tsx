@@ -38,7 +38,7 @@ export function OrderStatusActions({ orderId, status, role }: OrderStatusActions
         nextActions.push({ status: 'DELIVERED', label: 'Mark Delivered' })
       }
 
-      if (status === 'DRAFT' || status === 'CONFIRMED' || status === 'SHIPPED' || status === 'DELIVERED') {
+      if ((['DRAFT', 'CONFIRMED', 'SHIPPED', 'DELIVERED'] as const).includes(status)) {
         nextActions.push({ status: 'CANCELLED', label: 'Cancel Order', variant: 'destructive' })
       }
 
