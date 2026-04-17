@@ -31,7 +31,7 @@ interface InvoiceDetail {
   id: string
   invoiceNumber: string
   status: InvoiceStatus
-  totalAmount: number | string
+  totalAmount: number
   currency: string
   dueDate: string
   createdAt: string
@@ -43,18 +43,32 @@ interface InvoiceDetail {
     id: string
     orderNumber: string
     status: OrderStatus
-    totalAmount: number | string
+    totalAmount: number
     currency: string
     items: Array<{
       id: string
       description: string
       quantity: number
-      unitPrice: number | string
+      unitPrice: number
     }>
   }
 }
 
-const INVOICE_STATUS_TIMELINE: InvoiceStatus[] = ['DRAFT', 'SUBMITTED', 'APPROVED', 'PAID']
+const INVOICE_STATUS_TIMELINE: Array<{ status: InvoiceStatus; branchOnly?: boolean }> = [
+  { status: 'DRAFT' },
+  { status: 'SUBMITTED' },
+  { status: 'APPROVED' },
+  { status: 'PAID' },
+  { status: 'REJECTED', branchOnly: true },
+]
+
+type RawInvoiceDetail = Omit<InvoiceDetail, 'totalAmount' | 'order'> & {
+  totalAmount: number | string
+  order: Omit<InvoiceDetail['order'], 'totalAmount' | 'items'> & {
+    totalAmount: number | string
+    items: Array<Omit<InvoiceDetail['order']['items'][number], 'unitPrice'> & { unitPrice: number | string }>
+  }
+}
 
 function parseInvoiceDetail(data: unknown): InvoiceDetail {
   if (
@@ -81,7 +95,32 @@ function parseInvoiceDetail(data: unknown): InvoiceDetail {
     throw new Error('Invalid invoice data received.')
   }
 
-  return data as InvoiceDetail
+  const raw = data as RawInvoiceDetail
+
+  const invoiceTotalAmount = Number(raw.totalAmount)
+  const orderTotalAmount = Number(raw.order.totalAmount)
+  const orderItems = raw.order.items.map((item) => ({
+    ...item,
+    unitPrice: Number(item.unitPrice),
+  }))
+
+  if (
+    !Number.isFinite(invoiceTotalAmount) ||
+    !Number.isFinite(orderTotalAmount) ||
+    orderItems.some((item) => !Number.isFinite(item.unitPrice))
+  ) {
+    throw new Error('Invalid invoice numeric data received.')
+  }
+
+  return {
+    ...raw,
+    totalAmount: invoiceTotalAmount,
+    order: {
+      ...raw.order,
+      totalAmount: orderTotalAmount,
+      items: orderItems,
+    },
+  }
 }
 
 export default function InvoiceDetailPage() {
@@ -157,7 +196,7 @@ export default function InvoiceDetailPage() {
             Supplier: {invoice.supplier?.companyName ?? 'Unknown supplier'}
           </p>
           <p className="text-sm text-muted-foreground">
-            Amount: {formatCurrency(Number(invoice.totalAmount), invoice.currency)} ({invoice.currency})
+            Amount: {formatCurrency(invoice.totalAmount, invoice.currency)} ({invoice.currency})
           </p>
           <p className="text-sm text-muted-foreground">
             Due{' '}
@@ -193,17 +232,22 @@ export default function InvoiceDetailPage() {
           </Badge>
         </div>
         <ol className="space-y-2 text-sm">
-          {INVOICE_STATUS_TIMELINE.map((status) => (
-            <li
-              key={status}
-              className={status === invoice.status ? 'font-medium text-foreground' : 'text-muted-foreground'}
-            >
-              {INVOICE_STATUS_LABELS[status]}
-            </li>
-          ))}
-          {invoice.status === 'REJECTED' && (
-            <li className="font-medium text-destructive">{INVOICE_STATUS_LABELS.REJECTED}</li>
-          )}
+          {INVOICE_STATUS_TIMELINE.map(({ status, branchOnly }) => {
+            const isActive = status === invoice.status
+            const className = isActive
+              ? status === 'REJECTED'
+                ? 'font-medium text-destructive'
+                : 'font-medium text-foreground'
+              : branchOnly
+                ? 'text-muted-foreground/80'
+                : 'text-muted-foreground'
+
+            return (
+              <li key={status} className={className}>
+                {INVOICE_STATUS_LABELS[status]}
+              </li>
+            )
+          })}
         </ol>
       </section>
 
@@ -223,7 +267,7 @@ export default function InvoiceDetailPage() {
             </Badge>
           </p>
           <p className="text-muted-foreground">
-            Total: {formatCurrency(Number(invoice.order.totalAmount), invoice.order.currency)}
+            Total: {formatCurrency(invoice.order.totalAmount, invoice.order.currency)}
           </p>
         </div>
       </section>
@@ -253,10 +297,10 @@ export default function InvoiceDetailPage() {
                     <TableCell>{item.description}</TableCell>
                     <TableCell className="text-right">{item.quantity}</TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(Number(item.unitPrice), invoice.order.currency)}
+                      {formatCurrency(item.unitPrice, invoice.order.currency)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(Number(item.unitPrice) * item.quantity, invoice.order.currency)}
+                      {formatCurrency(item.unitPrice * item.quantity, invoice.order.currency)}
                     </TableCell>
                   </TableRow>
                 ))
