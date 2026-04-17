@@ -6,7 +6,7 @@ interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'
   href: string
 }
 
-const ABSOLUTE_URL_PATTERN = /^[a-zA-Z][a-zA-Z\d+\-.]*:/
+const ABSOLUTE_URL_SCHEME_PATTERN = /^[a-zA-Z][a-zA-Z\d+\-.]*:/
 
 export default function Link({ href, onClick, target, ...props }: LinkProps) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
@@ -19,7 +19,7 @@ export default function Link({ href, onClick, target, ...props }: LinkProps) {
       event.altKey ||
       event.ctrlKey ||
       event.shiftKey ||
-      ABSOLUTE_URL_PATTERN.test(href) ||
+      ABSOLUTE_URL_SCHEME_PATTERN.test(href) ||
       href.startsWith('//')
     ) {
       return

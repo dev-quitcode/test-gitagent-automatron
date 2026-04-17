@@ -33,9 +33,24 @@ const routes = [
 
 export default function AppRouter() {
   const pathname = usePathname()
-  const route =
-    routes.find((candidate) => !candidate.path.includes(':') && candidate.path === pathname) ??
-    routes.find((candidate) => candidate.path.includes(':') && matchRoute(candidate.path, pathname))
+  let route: (typeof routes)[number] | undefined
+  let dynamicRoute: (typeof routes)[number] | undefined
+
+  for (const candidate of routes) {
+    if (!candidate.path.includes(':')) {
+      if (candidate.path === pathname) {
+        route = candidate
+        break
+      }
+      continue
+    }
+
+    if (!dynamicRoute && matchRoute(candidate.path, pathname)) {
+      dynamicRoute = candidate
+    }
+  }
+
+  route ??= dynamicRoute
 
   if (!route) {
     return <App />

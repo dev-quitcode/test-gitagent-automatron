@@ -31,7 +31,6 @@ const registerSchema = z
   })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
-const loginRegisteredQuery = new URLSearchParams({ registered: 'true' }).toString()
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -65,7 +64,7 @@ export default function RegisterPage() {
       return
     }
 
-    router.push(`/login?${loginRegisteredQuery}`)
+    router.push('/login?registered=true')
   }
 
   return (

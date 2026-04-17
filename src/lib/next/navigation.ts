@@ -23,7 +23,7 @@ function getSnapshot() {
 }
 
 function getServerSnapshot() {
-  return '/'
+  return ''
 }
 
 function useCurrentHref() {
