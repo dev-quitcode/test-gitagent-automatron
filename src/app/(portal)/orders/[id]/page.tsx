@@ -108,7 +108,7 @@ export default function OrderDetailPage() {
             Total: {formatCurrency(Number(order.totalAmount), order.currency)}
           </p>
           <p className="text-sm text-muted-foreground">
-            Created {formatDate(new Date(order.createdAt))} · Updated {formatDate(new Date(order.updatedAt))}
+            Created {formatDate(new Date(order.createdAt))} - Updated {formatDate(new Date(order.updatedAt))}
           </p>
         </div>
 
