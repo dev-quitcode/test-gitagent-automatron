@@ -28,9 +28,10 @@ const updateInvoiceSchema = z.object({
 })
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: { id: string } },
 ): Promise<Response> {
+  void request
   const user = await getCurrentUser()
 
   if (!user) {

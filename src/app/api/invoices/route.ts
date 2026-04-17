@@ -11,10 +11,10 @@ const createInvoiceSchema = z.object({
   dueDate: z.coerce.date(),
 })
 
-const MAX_INVOICE_NUMBER_GENERATION_ATTEMPTS = 5
+const MAX_INVOICE_NUMBER_RETRIES = 5
 
 function generateInvoiceNumber(): string {
-  return `INV-${Date.now()}-${randomUUID().replaceAll('-', '').toUpperCase()}`
+  return `INV-${randomUUID().replaceAll('-', '').toUpperCase()}`
 }
 
 function isInvoiceNumberConflict(error: unknown): boolean {
@@ -133,7 +133,7 @@ export async function POST(request: Request): Promise<Response> {
     })
   }
 
-  for (let attempt = 0; attempt < MAX_INVOICE_NUMBER_GENERATION_ATTEMPTS; attempt += 1) {
+  for (let attempt = 0; attempt < MAX_INVOICE_NUMBER_RETRIES; attempt += 1) {
     try {
       const invoice = await prisma.invoice.create({
         data: {
@@ -163,7 +163,7 @@ export async function POST(request: Request): Promise<Response> {
         })
       }
 
-      if (attempt === MAX_INVOICE_NUMBER_GENERATION_ATTEMPTS - 1) {
+      if (attempt === MAX_INVOICE_NUMBER_RETRIES - 1) {
         break
       }
     }
