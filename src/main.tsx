@@ -10,6 +10,7 @@ import RegisterPage from './app/(auth)/register/page.tsx'
 import PortalLayout from './app/(portal)/layout.tsx'
 import DashboardPage from './app/(portal)/dashboard/page.tsx'
 import OrdersPage from './app/(portal)/orders/page.tsx'
+import CreateOrderPage from './app/(portal)/orders/new/page.tsx'
 import InvoicesPage from './app/(portal)/invoices/page.tsx'
 import SuppliersPage from './app/(portal)/suppliers/page.tsx'
 import SupplierDetailPage from './app/(portal)/suppliers/[id]/page.tsx'
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<PortalLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/new" element={<CreateOrderPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/suppliers" element={<SuppliersPage />} />
             <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
