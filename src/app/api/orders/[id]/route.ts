@@ -43,7 +43,7 @@ const updateOrderSchema = z
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const user = await getCurrentUser()
 
@@ -54,7 +54,7 @@ export async function GET(
     })
   }
 
-  const { id } = params
+  const { id } = await params
 
   const order = await prisma.order.findUnique({
     where: { id },
@@ -87,7 +87,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const user = await getCurrentUser()
 
@@ -98,7 +98,7 @@ export async function PUT(
     })
   }
 
-  const { id } = params
+  const { id } = await params
 
   let body: unknown
   try {

@@ -49,7 +49,6 @@ interface OrderOption {
 
 const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP']
 const ORDER_STATUSES: OrderStatus[] = ['CONFIRMED', 'DELIVERED']
-export const dynamic = 'force-dynamic'
 
 function CreateInvoicePageContent() {
   const router = useRouter()

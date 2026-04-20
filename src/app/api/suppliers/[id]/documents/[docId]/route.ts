@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth-utils'
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string; docId: string } },
+  { params }: { params: Promise<{ id: string; docId: string }> },
 ): Promise<Response> {
   const user = await getCurrentUser()
 
@@ -16,7 +16,7 @@ export async function DELETE(
     })
   }
 
-  const { id, docId } = params
+  const { id, docId } = await params
 
   if (user.role !== 'ADMIN' && user.supplierId !== id) {
     return new Response(JSON.stringify({ error: 'Forbidden.' }), {

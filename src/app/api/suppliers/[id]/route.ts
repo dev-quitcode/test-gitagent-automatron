@@ -11,7 +11,7 @@ const updateSupplierSchema = z.object({
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const user = await getCurrentUser()
 
@@ -22,7 +22,7 @@ export async function GET(
     })
   }
 
-  const { id } = params
+  const { id } = await params
 
   if (user.role !== 'ADMIN' && user.supplierId !== id) {
     return new Response(JSON.stringify({ error: 'Forbidden.' }), {
@@ -56,7 +56,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const user = await getCurrentUser()
 
@@ -67,7 +67,7 @@ export async function PUT(
     })
   }
 
-  const { id } = params
+  const { id } = await params
 
   if (user.role !== 'ADMIN' && user.supplierId !== id) {
     return new Response(JSON.stringify({ error: 'Forbidden.' }), {
