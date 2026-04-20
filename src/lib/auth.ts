@@ -5,6 +5,7 @@ import { type Role } from "@prisma/client";
 import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -63,6 +64,21 @@ export const authOptions: NextAuthOptions = {
         session.user.supplierId = token.supplierId;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      const authUrl = process.env.NEXTAUTH_URL ?? baseUrl;
+      const authOrigin = new URL(authUrl).origin;
+
+      if (url.startsWith("/") && !url.startsWith("//")) {
+        return `${authOrigin}${url}`;
+      }
+
+      try {
+        const redirectUrl = new URL(url);
+        return redirectUrl.origin === authOrigin ? redirectUrl.toString() : authOrigin;
+      } catch {
+        return authOrigin;
+      }
     },
   },
 };
